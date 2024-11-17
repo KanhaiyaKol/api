@@ -8,8 +8,11 @@ const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
+const conversationRoute = require("./routes/conversations");
+const messageRoute = require("./routes/messages");
 const router = express.Router();
 const path = require("path");
+const cors = require("cors");
 
 dotenv.config();
 
@@ -20,7 +23,15 @@ mongoose.connect(
     console.log("Connected to MongoDB");
   }
 );
+
 app.use("/images", express.static(path.join(__dirname, "public/images")));
+
+app.use(cors());
+
+const mediaRoutes = require("./routes/media");
+
+app.use("/api/v1/media", mediaRoutes);
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 //middleware
 app.use(express.json());
@@ -48,6 +59,8 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/conversations", conversationRoute);
+app.use("/api/messages", messageRoute);
 
 app.listen(8800, () => {
   console.log("Backend server is running!");
